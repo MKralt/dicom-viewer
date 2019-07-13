@@ -1,8 +1,10 @@
 <template>
     <input
         type="file"
-        :files="fileList"
-        @change="$emit('change', fileList)"
+        multiple
+        role="button"
+        aria-label="Upload file"
+        @change="onChange"
     />
 </template>
 
@@ -17,6 +19,12 @@ export default {
         fileList: {
             type: Array,
             default: () => []
+        }
+    },
+
+    methods: {
+        onChange(event) {
+            this.$emit('change', Array.from(event.target.files))
         }
     }
 }
