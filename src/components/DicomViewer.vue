@@ -1,6 +1,16 @@
 <template>
     <div>
         <div class="viewer" ref="viewer"></div>
+        <input
+            type="range"
+            min="0"
+            :max="imageIds.length - 1"
+            v-model="currentImageIndex">
+        <input
+            type="number"
+            min="0"
+            :max="imageIds.length - 1"
+            v-model="currentImageIndex">
     </div>
 </template>
 
@@ -34,27 +44,36 @@ export default {
     data() {
         return {
             cornerstone: cornerstone,
-            imageLoader: cornerstoneWADOImageLoader
+            imageLoader: cornerstoneWADOImageLoader,
+            currentImageIndex: 0
         }
     },
 
     computed: {
         imageIds() {
             return this.imageLoader ? this.files.map((file) => this.imageLoader.wadouri.fileManager.add(file)) : []
+        },
+
+        currentImageId() {
+            return this.imageIds[this.currentImageIndex]
         }
     },
 
     methods: {
         displayImage(imageId) {
-            this.cornerstone.loadImage(imageId).then((image) => this.cornerstone.displayImage(this.$refs.viewer, image))
+            imageId && this.cornerstone.loadImage(imageId).then((image) => this.cornerstone.displayImage(this.$refs.viewer, image))
         }
     },
 
     watch: {
         imageIds(newValue) {
             if(newValue.length > 0) {
-                this.displayImage(newValue[0])
+                this.currentImageIndex = 0
             }
+        },
+
+        currentImageId(imageId) {
+            this.displayImage(imageId)
         }
     },
 
