@@ -45,7 +45,8 @@ export default {
         return {
             cornerstone: cornerstone,
             imageLoader: cornerstoneWADOImageLoader,
-            currentImageIndex: 0
+            currentImageIndex: 0,
+            images: {}
         }
     },
 
@@ -54,26 +55,40 @@ export default {
             return this.imageLoader ? this.files.map((file) => this.imageLoader.wadouri.fileManager.add(file)) : []
         },
 
-        currentImageId() {
-            return this.imageIds[this.currentImageIndex]
+        currentImage() {
+            return this.images[this.imageIds[this.currentImageIndex]]
         }
     },
 
     methods: {
-        displayImage(imageId) {
-            imageId && this.cornerstone.loadImage(imageId).then((image) => this.cornerstone.displayImage(this.$refs.viewer, image))
+        displayImage(image) {
+            this.cornerstone.displayImage(this.$refs.viewer, image)
         }
     },
 
     watch: {
-        imageIds(newValue) {
-            if(newValue.length > 0) {
+        imageIds(imageIds) {
+            const images = {}
+
+            const promises = []
+
+            imageIds.map((imageId) => {
+                const promise = this.cornerstone.loadImage(imageId)
+                promises.push(promise)
+
+                promise.then((image) => {
+                    images[imageId] = image
+                })
+            })
+
+            Promise.all(promises).then(() => {
                 this.currentImageIndex = 0
-            }
+                this.images = images
+            })
         },
 
-        currentImageId(imageId) {
-            this.displayImage(imageId)
+        currentImage(image) {
+            image && this.displayImage(image)
         }
     },
 
