@@ -1,23 +1,43 @@
 <template>
     <div>
-        <div class="viewer" ref="viewer"></div>
-        <input
-            type="range"
-            min="0"
-            :max="imageFiles.length - 1"
-            v-model="currentImageIndex">
-        <input
-            type="number"
-            min="0"
-            :max="imageFiles.length - 1"
-            v-model="currentImageIndex">
-        <div>
-            <button
-                v-for="({ id, name }, index) in imageFiles"
-                :key="id"
-                @click="currentImageIndex = index">
-                {{ name }}
-            </button>
+        <div class="slider-wrapper is-flex">
+            <input
+                type="range"
+                class="slider"
+                min="0"
+                :max="imageFiles.length - 1"
+                v-model="currentImageIndex">
+            <span class="slider-value">
+                {{ +currentImageIndex + 1 }} / {{ imageFiles.length }}
+            </span>
+        </div>
+        <div class="columns">
+            <div class="column is-three-quarters-desktop is-two-thirds-tablet">
+                <div class="viewer" ref="viewer"></div>
+            </div>
+            <div class="column content-box" :style="`height: ${canvasHeight}`">
+                <div class="message">
+                    <div class="message-header">
+                        <span>DICOM files</span>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-block-container has-background-white">
+                            <a
+                                v-for="({ id, name }, index) in imageFiles"
+                                class="panel-block panel-link"
+                                :class="{'is-active': currentImageIndex == index}"
+                                style="text-decoration-line: none"
+                                :key="id"
+                                @click="currentImageIndex = index">
+                                <span v-if="currentImageIndex == index" class="panel-icon">
+                                    &#9679;
+                                </span>
+                                {{ name }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -122,7 +142,38 @@ export default {
 
 <style lang="scss" scoped>
 .viewer {
-    width: 500px;
-    height: 500px;
+    width: 100%;
+}
+
+.message {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-box {
+    box-sizing: content-box;
+}
+
+.slider-value {
+    margin-left: 8px;
+}
+
+.slider-wrapper {
+    margin-bottom: 16px;
+    align-items: center;
+}
+
+.slider {
+    flex: 1;
+}
+
+.panel {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.panel-block-container {
+    overflow-y: auto;
 }
 </style>
