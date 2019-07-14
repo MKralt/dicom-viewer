@@ -49,6 +49,7 @@
 </template>
 
 <script>
+// Cornerstone setup
 import dicomParser from 'dicom-parser'
 import cornerstone from 'cornerstone-core'
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader'
@@ -110,11 +111,13 @@ export default {
     watch: {
         imageFiles(imageFiles) {
             this.loaded = false;
+            // Loading event signals that viewer is loading new images
             this.$emit('loading')
             const images = {}
 
+            // Each promise is saved to be able to detect when all images have been loaded
             const promises = []
-
+            
             imageFiles.map(({ id: imageId }) => {
                 const promise = this.cornerstone.loadImage(imageId)
                 promises.push(promise)
@@ -124,10 +127,13 @@ export default {
                 })
             })
 
+            // All images are loaded
             Promise.all(promises).then(() => {
+                // Set index to 0 to prevent the old index from being out of range of the new image set
                 this.currentImageIndex = 0
                 this.images = images
                 this.loaded = true;
+                // Loaded event signals that viewer is done loading new images
                 this.$emit('loaded')
             })
         },
@@ -139,10 +145,14 @@ export default {
 
     mounted() {
         const viewer = this.$refs.viewer
+
+        // Ensure cornerstone canvas is square
         this.canvasHeight = viewer.style.height = window.getComputedStyle(viewer).width
+
         this.cornerstone.enable(viewer)
 
         window.addEventListener('resize', () => {
+            // Update cornerstone canvas dimensions on window resize
             this.canvasHeight = viewer.style.height = window.getComputedStyle(viewer).width
             this.cornerstone.resize(viewer)
         })
