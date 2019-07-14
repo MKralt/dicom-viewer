@@ -6,18 +6,28 @@
             :files="dicomFiles"
             @loaded="onLoaded"
             @loading="onLoading"
+            @uploadRequest="onUploadRequest"
           ></dicom-viewer>
         </div>
       </div>
     <div class="modal" :class="{ 'is-active': showModal }">
-      <div class="modal-background"></div>
+      <div
+        class="modal-background"
+        @click="closeModal"></div>
       <div class="modal-card">
         <header class="modal-card-head">
           <span class="modal-card-title">Upload DICOM files</span>
+          <button
+            v-if="!showWelcomeMessage"
+            class="delete"
+            aria-label="close"
+            @click="closeModal"
+          ></button>
         </header>
         <section class="modal-card-body">
           <p class="margin-bottom">
-            Welcome to DICOM viewer! Please click the button below to upload one or multiple DICOM files, in order to view them.
+            <span v-if="showWelcomeMessage">Welcome to DICOM viewer!</span>
+            Click the button below to upload one or multiple DICOM files, in order to view them.
           </p>
           <dicom-file-uploader v-model="dicomFiles" :loading="loadingFiles"></dicom-file-uploader>
         </section>
@@ -43,6 +53,7 @@ export default {
     return {
       dicomFiles: [],
       showModal: true,
+      showWelcomeMessage: true,
       loadingFiles: false
     }
   },
@@ -51,11 +62,22 @@ export default {
     onLoading() {
       this.loadingFiles = true;
     },
-    
+
     onLoaded() {
       this.loadingFiles = false
 
       if(this.dicomFiles.length > 0) {
+        this.showModal = false
+        this.showWelcomeMessage = false
+      }
+    },
+
+    onUploadRequest() {
+      this.showModal = true
+    },
+
+    closeModal() {
+      if(!this.showWelcomeMessage) {
         this.showModal = false
       }
     }

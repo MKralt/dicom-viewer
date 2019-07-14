@@ -15,7 +15,13 @@
             <div class="column is-three-quarters-desktop is-two-thirds-tablet">
                 <div class="viewer" ref="viewer"></div>
             </div>
-            <div class="column content-box" :style="`height: ${canvasHeight}`">
+            <div class="column sidebar" :style="`height: ${canvasHeight}`">
+                <button
+                    class="button button-upload"
+                    @click="$emit('uploadRequest')"
+                >
+                    Upload new files
+                </button>
                 <div class="message">
                     <div class="message-header">
                         <span>DICOM files</span>
@@ -75,7 +81,8 @@ export default {
             imageLoader: cornerstoneWADOImageLoader,
             currentImageIndex: 0,
             images: {},
-            canvasHeight: '0px'
+            canvasHeight: '0px',
+            loaded: false
         }
     },
 
@@ -90,18 +97,19 @@ export default {
         },
 
         currentImage() {
-            return this.imageFiles.length > 0 ? this.images[this.imageFiles[this.currentImageIndex].id] : {}
+            return this.loaded && this.images[this.imageFiles[this.currentImageIndex].id]
         }
     },
 
     methods: {
         displayImage(image, element = this.$refs.viewer) {
-            this.cornerstone.displayImage(element, image)
+            this.loaded && this.cornerstone.displayImage(element, image)
         }
     },
 
     watch: {
         imageFiles(imageFiles) {
+            this.loaded = false;
             this.$emit('loading')
             const images = {}
 
@@ -119,6 +127,7 @@ export default {
             Promise.all(promises).then(() => {
                 this.currentImageIndex = 0
                 this.images = images
+                this.loaded = true;
                 this.$emit('loaded')
             })
         },
@@ -146,13 +155,19 @@ export default {
     width: 100%;
 }
 
-.message {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+.button.button-upload {
+    margin-bottom: 16px;
 }
 
-.content-box {
+.message {
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px rgb(219,219,219) solid;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
     box-sizing: content-box;
 }
 
