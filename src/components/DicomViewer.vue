@@ -4,13 +4,21 @@
         <input
             type="range"
             min="0"
-            :max="imageIds.length - 1"
+            :max="imageFiles.length - 1"
             v-model="currentImageIndex">
         <input
             type="number"
             min="0"
-            :max="imageIds.length - 1"
+            :max="imageFiles.length - 1"
             v-model="currentImageIndex">
+        <div>
+            <button
+                v-for="({ id, name }, index) in imageFiles"
+                :key="id"
+                @click="currentImageIndex = index">
+                {{ name }}
+            </button>
+        </div>
     </div>
 </template>
 
@@ -46,33 +54,39 @@ export default {
             cornerstone: cornerstone,
             imageLoader: cornerstoneWADOImageLoader,
             currentImageIndex: 0,
-            images: {}
+            images: {},
+            thumbnails: {}
         }
     },
 
     computed: {
-        imageIds() {
-            return this.imageLoader ? this.files.map((file) => this.imageLoader.wadouri.fileManager.add(file)) : []
+        imageFiles() {
+            return this.imageLoader ? this.files.map((file) => {
+                return {
+                    id: this.imageLoader.wadouri.fileManager.add(file),
+                    name: file.name
+                }
+            }) : []
         },
 
         currentImage() {
-            return this.images[this.imageIds[this.currentImageIndex]]
+            return this.imageFiles.length > 0 ? this.images[this.imageFiles[this.currentImageIndex].id] : {}
         }
     },
 
     methods: {
-        displayImage(image) {
-            this.cornerstone.displayImage(this.$refs.viewer, image)
+        displayImage(image, element = this.$refs.viewer) {
+            this.cornerstone.displayImage(element, image)
         }
     },
 
     watch: {
-        imageIds(imageIds) {
+        imageFiles(imageFiles) {
             const images = {}
 
             const promises = []
 
-            imageIds.map((imageId) => {
+            imageFiles.map(({ id: imageId }) => {
                 const promise = this.cornerstone.loadImage(imageId)
                 promises.push(promise)
 
