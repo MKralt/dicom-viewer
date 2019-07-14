@@ -11,7 +11,8 @@
             >
             <span class="file-cta">
                 <span class="file-label">
-                    Upload DICOM files
+                    <span v-if="loading" class="loader loader-grey"></span>
+                    <span v-show="!loading">Upload DICOM files</span>
                 </span>
             </span>
         </label>
@@ -29,7 +30,8 @@ export default {
         fileList: {
             type: Array,
             default: () => []
-        }
+        },
+        loading: Boolean
     },
 
     methods: {
@@ -39,3 +41,10 @@ export default {
     }
 }
 </script>
+
+<style lang="scss">
+.loader.loader-grey {
+    border-bottom-color: hsl(0, 0%, 48%);
+    border-left-color: hsl(0, 0%, 48%);
+}
+</style>

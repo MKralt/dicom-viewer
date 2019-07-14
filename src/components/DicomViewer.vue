@@ -102,6 +102,7 @@ export default {
 
     watch: {
         imageFiles(imageFiles) {
+            this.$emit('loading')
             const images = {}
 
             const promises = []

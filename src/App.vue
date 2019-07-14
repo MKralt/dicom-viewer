@@ -5,6 +5,7 @@
           <dicom-viewer
             :files="dicomFiles"
             @loaded="onLoaded"
+            @loading="onLoading"
           ></dicom-viewer>
         </div>
       </div>
@@ -18,7 +19,7 @@
           <p class="margin-bottom">
             Welcome to DICOM viewer! Please click the button below to upload one or multiple DICOM files, in order to view them.
           </p>
-          <dicom-file-uploader v-model="dicomFiles"></dicom-file-uploader>
+          <dicom-file-uploader v-model="dicomFiles" :loading="loadingFiles"></dicom-file-uploader>
         </section>
         <footer class="modal-card-foot">
         </footer>
@@ -41,13 +42,22 @@ export default {
   data() {
     return {
       dicomFiles: [],
-      showModal: true
+      showModal: true,
+      loadingFiles: false
     }
   },
 
   methods: {
+    onLoading() {
+      this.loadingFiles = true;
+    },
+    
     onLoaded() {
-      this.dicomFiles.length > 0 && (this.showModal = false)
+      this.loadingFiles = false
+
+      if(this.dicomFiles.length > 0) {
+        this.showModal = false
+      }
     }
   }
 }
