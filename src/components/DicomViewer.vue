@@ -55,7 +55,7 @@ export default {
             imageLoader: cornerstoneWADOImageLoader,
             currentImageIndex: 0,
             images: {},
-            thumbnails: {}
+            canvasHeight: '0px'
         }
     },
 
@@ -107,7 +107,14 @@ export default {
     },
 
     mounted() {
-        this.cornerstone.enable(this.$refs.viewer)
+        const viewer = this.$refs.viewer
+        this.canvasHeight = viewer.style.height = window.getComputedStyle(viewer).width
+        this.cornerstone.enable(viewer)
+
+        window.addEventListener('resize', () => {
+            this.canvasHeight = viewer.style.height = window.getComputedStyle(viewer).width
+            this.cornerstone.resize(viewer)
+        })
     }
 }
 </script>
