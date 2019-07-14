@@ -98,6 +98,7 @@ export default {
             Promise.all(promises).then(() => {
                 this.currentImageIndex = 0
                 this.images = images
+                this.$emit('loaded')
             })
         },
 
