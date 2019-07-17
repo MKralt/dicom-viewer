@@ -25,10 +25,10 @@
           ></button>
         </header>
         <section class="modal-card-body">
-          <p class="margin-bottom">
-            <span v-if="showWelcomeMessage">Welcome to DICOM viewer!</span>
-            Click the button below to upload one or multiple DICOM files, in order to view them.
-          </p>
+          <div class="margin-bottom has-text-centered">
+            <p v-if="showWelcomeMessage">Welcome to DICOM viewer!</p>
+            <p>Upload one or multiple DICOM files, in order to view them.</p>
+          </div>
           <dicom-file-uploader v-model="dicomFiles" :loading="loadingFiles"></dicom-file-uploader>
         </section>
         <footer class="modal-card-foot">
